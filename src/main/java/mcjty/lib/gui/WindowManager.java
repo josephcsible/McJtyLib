@@ -3,11 +3,11 @@ package mcjty.lib.gui;
 import mcjty.lib.gui.icons.IconManager;
 import mcjty.lib.gui.widgets.AbstractContainerWidget;
 import mcjty.lib.gui.widgets.Widget;
+import mcjty.lib.varia.BlamingNonNullList;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
 import org.lwjgl.input.Mouse;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -21,8 +21,8 @@ public class WindowManager {
     private IconManager iconManager = new IconManager(this);
     private final GuiScreen gui;
 
-    private List<Window> windows = new ArrayList<>();
-    private List<Window> modalWindows = new ArrayList<>();
+    private BlamingNonNullList<Window> windows = new BlamingNonNullList<>();
+    private BlamingNonNullList<Window> modalWindows = new BlamingNonNullList<>();
 
     // If -1 it is not this window manager that manages the mousewheel but
     // the window itself
@@ -84,8 +84,12 @@ public class WindowManager {
 
     public void draw() {
         mouseWheel = Mouse.getDWheel();
+        windows.setDoRethrow(true);
         windows.stream().forEach(w -> w.draw());
+        windows.setDoRethrow(false);
+        modalWindows.setDoRethrow(true);
         modalWindows.stream().forEach(w -> w.draw());
+        modalWindows.setDoRethrow(false);
         iconManager.draw(Minecraft.getMinecraft(), gui);
     }
 
